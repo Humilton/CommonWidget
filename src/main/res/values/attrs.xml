@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="HorizonClickView">
+        <attr name="leftTxt" format="string"/>
+        <attr name="rightTxt" format="string"/>
+        <attr name="leftImage" format="reference"/>
+        <attr name="rightImage" format="reference"/>
+        <attr name="leftPadding" format="dimension"/>
+        <attr name="rightPadding" format="dimension"/>
+        <attr name="horizonBackground" format="reference|color"/>
+        <attr name="horizonJumpActivity" format="string"/>
+    </declare-styleable>
+</resources>
