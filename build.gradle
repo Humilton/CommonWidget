@@ -17,6 +17,9 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
+    dataBinding {
+        enabled = true;
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -27,6 +30,7 @@ android {
 
 buildscript {
     repositories {
+        maven { url 'https://maven.google.com' }
         jcenter()
     }
     dependencies {
@@ -37,6 +41,7 @@ buildscript {
 
 allprojects {
     repositories {
+        maven { url 'https://maven.google.com' }
         jcenter()
     }
 }

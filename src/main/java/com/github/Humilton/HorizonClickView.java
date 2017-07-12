@@ -3,6 +3,7 @@ package com.github.Humilton;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
@@ -123,6 +124,9 @@ public class HorizonClickView extends RelativeLayout {
 
     public void setTitle(CharSequence str) { this.leftText.setText(str); }
     public void setValue(CharSequence str) { this.rightText.setText(str); }
-    public void setLeftText(CharSequence str) { this.leftText.setText(str); }
-    public void setRightText(CharSequence str) { this.rightText.setText(str); }
+
+    @BindingAdapter("app:leftTxt")
+    public static void setLeftTxt(final HorizonClickView v, CharSequence str) { v.setTitle(str); }
+    @BindingAdapter("app:rightTxt")
+    public static void setRightTxt(final HorizonClickView v, CharSequence str) { v.setValue(str); }
 }
