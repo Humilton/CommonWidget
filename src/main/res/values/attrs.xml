@@ -8,6 +8,6 @@
         <attr name="leftPadding" format="dimension"/>
         <attr name="rightPadding" format="dimension"/>
         <attr name="horizonBackground" format="reference|color"/>
-        <attr name="horizonJumpActivity" format="string"/>
+        <attr name="jumpActivity" format="string"/>
     </declare-styleable>
 </resources>

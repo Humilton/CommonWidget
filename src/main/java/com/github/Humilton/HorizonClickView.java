@@ -98,7 +98,7 @@ public class HorizonClickView extends RelativeLayout {
                 }
             }
 
-            String activityName = ta.getString(R.styleable.HorizonClickView_horizonJumpActivity);
+            String activityName = ta.getString(R.styleable.HorizonClickView_jumpActivity);
             if(!TextUtils.isEmpty(activityName)) {
                 this.tryJumpActivityOnClick(activityName);
             }
