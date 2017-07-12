@@ -121,11 +121,8 @@ public class HorizonClickView extends RelativeLayout {
         });
     }
 
-    public void setTitle(CharSequence str) {
-        this.leftText.setText(str);
-    }
-
-    public void setValue(CharSequence str) {
-        this.rightText.setText(str);
-    }
+    public void setTitle(CharSequence str) { this.leftText.setText(str); }
+    public void setValue(CharSequence str) { this.rightText.setText(str); }
+    public void setLeftText(CharSequence str) { this.leftText.setText(str); }
+    public void setRightText(CharSequence str) { this.rightText.setText(str); }
 }
