@@ -1,4 +1,3 @@
-apply plugin: 'android-library'
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
@@ -6,7 +5,7 @@ group='com.github.Humilton'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "26.0.0"
+    buildToolsVersion "25.0.0"
 
     defaultConfig {
         minSdkVersion 15
@@ -30,7 +29,6 @@ android {
 
 buildscript {
     repositories {
-        maven { url 'https://maven.google.com' }
         jcenter()
     }
     dependencies {
@@ -41,7 +39,6 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url 'https://maven.google.com' }
         jcenter()
     }
 }
