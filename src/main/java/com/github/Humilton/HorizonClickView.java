@@ -86,12 +86,13 @@ public class HorizonClickView extends RelativeLayout {
 
             int leftPadding = (int) ta.getDimension(R.styleable.HorizonClickView_leftPadding, 0f);
             int rightPadding = (int) ta.getDimension(R.styleable.HorizonClickView_rightPadding, 0f);
-            if(leftPadding != 0) {
-                leftText.setPadding(leftPadding, 0, 0, 0);
-            }
-
-            if(rightPadding != 0) {
-                rightText.setPadding(0, 0, rightPadding, 0);
+            if(leftPadding != 0) leftText.setPadding(leftPadding, 0, 0, 0);
+            if(rightPadding != 0) rightText.setPadding(0, 0, rightPadding, 0);
+            int leftMargin = (int) ta.getDimension(R.styleable.HorizonClickView_leftMargin, 0f);
+            if(leftMargin != 0) {
+                RelativeLayout.LayoutParams rl = (LayoutParams) leftText.getLayoutParams();
+                rl.setMargins(leftMargin, 0 , 0 , 0);
+                leftText.setLayoutParams(rl);
             }
 
             Drawable background = ta.getDrawable(R.styleable.HorizonClickView_horizonBackground);
