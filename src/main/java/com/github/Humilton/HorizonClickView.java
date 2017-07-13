@@ -73,6 +73,12 @@ public class HorizonClickView extends RelativeLayout {
             if (null != leftDrawable) {
                 leftImage.setImageDrawable(leftDrawable);
             }
+
+            boolean rightImageInvisible = ta.getBoolean(R.styleable.HorizonClickView_rightImageInvisible, false);
+            if(rightImageInvisible) {
+                rightImage.setVisibility(INVISIBLE);
+            }
+
             Drawable rightDrawable = ta.getDrawable(R.styleable.HorizonClickView_rightImage);
             if (null != rightDrawable) {
                 rightImage.setImageDrawable(rightDrawable);
