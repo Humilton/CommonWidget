@@ -7,6 +7,7 @@
         <attr name="rightImage" format="reference"/>
         <attr name="rightImageInvisible" format="boolean"/>
         <attr name="leftMargin" format="dimension"/>
+        <attr name="rightMargin" format="dimension"/>
         <attr name="leftPadding" format="dimension"/>
         <attr name="rightPadding" format="dimension"/>
         <attr name="horizonBackground" format="reference|color"/>

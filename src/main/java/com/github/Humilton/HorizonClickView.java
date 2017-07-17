@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
@@ -58,6 +59,8 @@ public class HorizonClickView extends RelativeLayout {
         rightText = (TextView) findViewById(R.id.right_txt);
         titleLayout = (RelativeLayout) findViewById(R.id.root);
 
+        this.setBackgroundColor(Color.WHITE);
+
         parseStyle(context, attrs);
     }
 
@@ -74,9 +77,28 @@ public class HorizonClickView extends RelativeLayout {
                 leftImage.setImageDrawable(leftDrawable);
             }
 
+            int leftMargin = (int) ta.getDimension(R.styleable.HorizonClickView_leftMargin, -1f);
+            if(leftMargin >= 0) {
+                RelativeLayout.LayoutParams rl = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                rl.setMargins(leftMargin, 0 , 0 , 0);
+                rl.addRule(RelativeLayout.CENTER_VERTICAL);
+                leftImage.setLayoutParams(rl);
+            }
+
+            int rightMargin = (int) ta.getDimension(R.styleable.HorizonClickView_rightMargin, -1f);
+            if(rightMargin >= 0) {
+                RelativeLayout.LayoutParams rl = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                rl.setMargins(0, 0 , rightMargin , 0);
+                rl.addRule(RelativeLayout.CENTER_VERTICAL);
+                rightImage.setLayoutParams(rl);
+            }
+
             boolean rightImageInvisible = ta.getBoolean(R.styleable.HorizonClickView_rightImageInvisible, false);
             if(rightImageInvisible) {
-                rightImage.setVisibility(INVISIBLE);
+                rightImage.setVisibility(GONE);
+                RelativeLayout.LayoutParams lp = (LayoutParams) rightText.getLayoutParams();
+                lp.rightMargin = 40;
+                rightText.setLayoutParams(lp);
             }
 
             Drawable rightDrawable = ta.getDrawable(R.styleable.HorizonClickView_rightImage);
@@ -88,12 +110,6 @@ public class HorizonClickView extends RelativeLayout {
             int rightPadding = (int) ta.getDimension(R.styleable.HorizonClickView_rightPadding, 0f);
             if(leftPadding != 0) leftText.setPadding(leftPadding, 0, 0, 0);
             if(rightPadding != 0) rightText.setPadding(0, 0, rightPadding, 0);
-            int leftMargin = (int) ta.getDimension(R.styleable.HorizonClickView_leftMargin, -1f);
-            if(leftMargin > 0) {
-                RelativeLayout.LayoutParams rl = (LayoutParams) leftText.getLayoutParams();
-                rl.setMargins(leftMargin, 0 , 0 , 0);
-                leftText.setLayoutParams(rl);
-            }
 
             Drawable background = ta.getDrawable(R.styleable.HorizonClickView_horizonBackground);
             if(null != background) {
@@ -131,9 +147,11 @@ public class HorizonClickView extends RelativeLayout {
 
     public void setTitle(CharSequence str) { this.leftText.setText(str); }
     public void setValue(CharSequence str) { this.rightText.setText(str); }
+    public String getTitle() { return this.leftText.getText().toString(); }
+    public String getValue() { return this.rightText.getText().toString(); }
 
-    @BindingAdapter("app:leftTxt")
+    @BindingAdapter({"leftTxt"})
     public static void setLeftTxt(final HorizonClickView v, CharSequence str) { v.setTitle(str); }
-    @BindingAdapter("app:rightTxt")
+    @BindingAdapter({"rightTxt"})
     public static void setRightTxt(final HorizonClickView v, CharSequence str) { v.setValue(str); }
 }
