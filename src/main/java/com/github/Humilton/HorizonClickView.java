@@ -24,7 +24,6 @@ import android.widget.TextView;
 public class HorizonClickView extends RelativeLayout {
     protected ImageView leftImage, rightImage;
     protected TextView leftText, rightText;
-    protected RelativeLayout titleLayout;
 
     public HorizonClickView(Context context) {
         super(context);
@@ -57,7 +56,6 @@ public class HorizonClickView extends RelativeLayout {
         rightImage = (ImageView) findViewById(R.id.right_image);
         leftText = (TextView) findViewById(R.id.left_txt);
         rightText = (TextView) findViewById(R.id.right_txt);
-        titleLayout = (RelativeLayout) findViewById(R.id.root);
 
         this.setBackgroundColor(Color.WHITE);
 
@@ -114,10 +112,10 @@ public class HorizonClickView extends RelativeLayout {
             Drawable background = ta.getDrawable(R.styleable.HorizonClickView_horizonBackground);
             if(null != background) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    titleLayout.setBackground(background);
+                    this.setBackground(background);
                 }
                 else {
-                    titleLayout.setBackgroundDrawable(background);
+                    this.setBackgroundDrawable(background);
                 }
             }
 
