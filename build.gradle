@@ -14,6 +14,8 @@ android {
         versionCode 1
         versionName "1.0"
 
+        resValue "string", "share_url", (project.findProperty("SHARE_URL") ?: "")
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     dataBinding {
@@ -52,8 +54,12 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:24.+'
+    compile 'com.android.support:recyclerview-v7:24.+'
+    compile 'com.android.support:cardview-v7:24.+'
     testCompile 'junit:junit:4.12'
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    //compile 'com.huxq17.xrefreshview:xrefreshview:3.6.9'
+    compile project(":XRefreshView")
 }

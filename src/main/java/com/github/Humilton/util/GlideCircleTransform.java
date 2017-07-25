@@ -1,4 +1,4 @@
-package com.github.Humilton;
+package com.github.Humilton.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,8 +15,15 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 
 public class GlideCircleTransform extends BitmapTransformation {
 
+    private int padding = 0;
+
     public GlideCircleTransform(Context context) {
         super(context);
+    }
+
+    public GlideCircleTransform(Context context, int padding) {
+        super(context);
+        this.padding = padding;
     }
 
     @Override
@@ -26,7 +33,7 @@ public class GlideCircleTransform extends BitmapTransformation {
 
     private Bitmap circleCrop(BitmapPool pool, Bitmap source) {
         if (source == null) return null;
-        int size = Math.min(source.getWidth(), source.getHeight());
+        int size = Math.min(source.getWidth(), source.getHeight()) - 2*padding;
         int x = (source.getWidth() - size) / 2;
         int y = (source.getHeight() - size) / 2;
         Bitmap squared = Bitmap.createBitmap(source, x, y, size, size);

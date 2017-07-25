@@ -1,4 +1,4 @@
-package com.github.Humilton;
+package com.github.Humilton.view;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +16,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.github.Humilton.R;
 
 /**
  * Created by Hamilton on 2017/7/10.
