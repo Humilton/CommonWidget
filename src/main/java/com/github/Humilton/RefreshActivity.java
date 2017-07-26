@@ -11,6 +11,7 @@ import com.andview.refreshview.XRefreshView;
 import com.andview.refreshview.XRefreshViewFooter;
 import com.github.Humilton.base.BaseBindingRecyclerAdapter;
 import com.github.Humilton.base.BaseViewHolder;
+import com.github.Humilton.base.PagedXRefreshListener;
 import com.github.Humilton.databinding.RefreshBinding;
 import com.github.Humilton.entity.Person;
 
@@ -26,8 +27,6 @@ public class RefreshActivity extends BaseActivity<RefreshBinding>  {
     SimpleAdapter adapter;
     List<Person> personList = new ArrayList<Person>();
     XRefreshView xRefreshView;
-    private int pageNo = 1;
-    private static final int pageSize = 10;
 
     @Override
     public int initBinding() {
@@ -38,7 +37,7 @@ public class RefreshActivity extends BaseActivity<RefreshBinding>  {
     public void initView() {
         mBinding.titleBar.setTitle(R.string.pull_refresh);
 
-        for (int i = 0; i < pageSize*5 + 2; i++) {
+        for (int i = 0; i < PagedXRefreshListener.pageSize*5 + 2; i++) {
             Person person = new Person("name" + i, "" + i);
             personList.add(person);
         }
@@ -50,47 +49,23 @@ public class RefreshActivity extends BaseActivity<RefreshBinding>  {
 
         GridLayoutManager layoutManager = new GridLayoutManager(this,2);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new SimpleAdapter(this, personList.subList(0, maxSize()));
+        adapter = new SimpleAdapter(this, personList.subList(0, PagedXRefreshListener.pageSize));
         recyclerView.setAdapter(adapter);
         xRefreshView.setPinnedTime(1000);
         xRefreshView.setMoveForHorizontal(true);
         adapter.setCustomLoadMoreView(new XRefreshViewFooter(this));
 
-        xRefreshView.setXRefreshViewListener(new XRefreshView.SimpleXRefreshListener() {
-
+        xRefreshView.setXRefreshViewListener(new PagedXRefreshListener(xRefreshView, adapter) {
             @Override
-            public void onRefresh(boolean isPullDown) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        xRefreshView.stopRefresh();
-                        xRefreshView.setLoadComplete(false);
-                        pageNo = 1;
-                        adapter.change(personList.subList(0, maxSize()));
-                    }
-                }, 2000);
+            public void modifyData(int maxCount) {
+                adapter.change(personList.subList(0, Math.min(maxCount, personList.size())));
             }
 
             @Override
-            public void onLoadMore(boolean isSilence) {
-                new Handler().postDelayed(new Runnable() {
-                    public void run() {
-                        pageNo++;
-                        adapter.change(personList.subList(0, maxSize()));
-                        if (pageNo*pageSize >= personList.size()) {
-                            xRefreshView.setLoadComplete(true);
-                        } else {
-                            // 刷新完成必须调用此方法停止加载
-                            xRefreshView.stopLoadMore();
-                        }
-                    }
-                }, 1000);
+            public boolean reachEnd(int maxCount) {
+                return  maxCount >= personList.size();
             }
         });
-    }
-
-    private int maxSize() {
-        return Math.min(personList.size(), pageNo*pageSize);
     }
 
     public class SimpleAdapter extends BaseBindingRecyclerAdapter<Person> {
