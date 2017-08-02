@@ -15,6 +15,7 @@ android {
         versionName "1.0"
 
         resValue "string", "share_url", (project.findProperty("SHARE_URL") ?: "")
+        resValue "string", "google_map_url", (project.findProperty("GOOGLE_MAP_URL") ?: "")
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -61,6 +62,8 @@ dependencies {
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    compile 'com.google.code.gson:gson:2.8.1'
     //compile 'com.huxq17.xrefreshview:xrefreshview:3.6.9'
     //compile project(":XRefreshView")
     compile 'com.github.Humilton:XRefreshView:v3.5.6'

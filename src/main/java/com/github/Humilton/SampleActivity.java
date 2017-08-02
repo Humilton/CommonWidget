@@ -7,7 +7,9 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,17 +22,21 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.github.Humilton.databinding.SampleBinding;
+import com.github.Humilton.entity.Location;
 import com.github.Humilton.util.GlideCircleTransform;
 import com.github.Humilton.util.ImageUtil;
+import com.github.Humilton.view.ExtWebViewClient;
 import com.github.Humilton.view.ShowCaseView;
 
 /**
  * Created by Hamilton on 2017/7/20.
  */
 
-public class SampleActivity extends BaseActivity<SampleBinding> implements ViewTreeObserver.OnGlobalLayoutListener, View.OnClickListener {
+public class SampleActivity extends BaseSampleActivity<SampleBinding> implements ViewTreeObserver.OnGlobalLayoutListener, View.OnClickListener {
+    private static final String TAG = SampleActivity.class.getSimpleName();
+
     private int dp45 = 0, dp3 = 0;
-    String[] icon = new String[]{"http://vbox-bucket-001.oss-cn-shanghai.aliyuncs.com/15000/BYGHeadUrl","http://vbox-bucket-001.oss-cn-shanghai.aliyuncs.com/15093/BYGHeadUrl"};
+    String[] icon = new String[]{"http://vbox-bucket-001.oss-cn-shanghai.aliyuncs.com/15000/BYGHeadUrl", "http://vbox-bucket-001.oss-cn-shanghai.aliyuncs.com/15093/BYGHeadUrl"};
     private static final String FIRST_ENTER_APP = "prefFirstEnterApp";
     private View rootView, targetView;
     private LayoutInflater mInflater;
@@ -43,6 +49,7 @@ public class SampleActivity extends BaseActivity<SampleBinding> implements ViewT
 
     @Override
     public void initView() {
+        super.initView();
         dp45 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 45, mContext.getResources().getDisplayMetrics());
         dp3 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, mContext.getResources().getDisplayMetrics());
 
@@ -71,7 +78,7 @@ public class SampleActivity extends BaseActivity<SampleBinding> implements ViewT
         new Thread(initRunnable(), "InitRunnable").start();
         String url1 = "https://ak3.picdn.net/shutterstock/videos/3514871/thumb/1.jpg";
         Glide.with(mContext).load(url1).placeholder(R.mipmap.holder).into(mBinding.imgContent);
-        Glide.with(mContext).load( "http://BadUrl/" ).thumbnail( ImageUtil.defaultPlaceHolder(mContext) ).transform(new GlideCircleTransform(mContext)).into(mBinding.imgAdmin);
+        Glide.with(mContext).load("http://BadUrl/").thumbnail(ImageUtil.defaultPlaceHolder(mContext)).transform(new GlideCircleTransform(mContext)).into(mBinding.imgAdmin);
     }
 
     private Runnable initRunnable() {
@@ -86,10 +93,10 @@ public class SampleActivity extends BaseActivity<SampleBinding> implements ViewT
     private void handleUserList(LinearLayout userContainer, String[] userList) {
         userContainer.removeAllViews();
         int height = dp45;
-        for(String url : userList) {
+        for (String url : userList) {
             ImageView v = new ImageView(mContext);
-            v.setLayoutParams(new LinearLayout.LayoutParams(height,height));
-            v.setPadding(dp3,0,dp3,0);
+            v.setLayoutParams(new LinearLayout.LayoutParams(height, height));
+            v.setPadding(dp3, 0, dp3, 0);
             Glide.with(mContext).load(url).transform(new GlideCircleTransform(mContext)).into(v);
             userContainer.addView(v);
         }
@@ -133,23 +140,25 @@ public class SampleActivity extends BaseActivity<SampleBinding> implements ViewT
 
     @Override
     public void onClick(View v) {
-        if(mDropdown != null)  mDropdown.dismiss();
+        if (mDropdown != null) mDropdown.dismiss();
 
-        if(v == mBinding.caseViewImg) {
+        if (v == mBinding.caseViewImg) {
             initiatePopupWindow();
-        }
-        else if (v.getId() == R.id.ItemA) {
+        } else if (v.getId() == R.id.ItemA) {
             String shareUrl = mContext.getResources().getString(R.string.share_url);
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT, shareUrl);
             sendIntent.setType("text/plain");
             mContext.startActivity(Intent.createChooser(sendIntent, mContext.getResources().getText(R.string.send_to)));
-        }
-        else if (v.getId() == R.id.ItemB) {
+        } else if (v.getId() == R.id.ItemB) {
             Intent swipeIntent = new Intent();
             swipeIntent.setClass(mContext, RefreshActivity.class);
             mContext.startActivity(swipeIntent);
+        } else if (v.getId() == R.id.ItemC) {
+            Intent swipeIntent = new Intent();
+            swipeIntent.setClass(mContext, GoogleMapLocationActivity.class);
+            mContext.startActivityForResult(swipeIntent, ExtWebViewClient.RESULT_LOCATION);
         }
     }
 
@@ -162,21 +171,32 @@ public class SampleActivity extends BaseActivity<SampleBinding> implements ViewT
             //If you want to add any listeners to your textviews, these are two //textviews.
             final TextView itema = (TextView) layout.findViewById(R.id.ItemA);
             final TextView itemb = (TextView) layout.findViewById(R.id.ItemB);
+            final TextView itemc = (TextView) layout.findViewById(R.id.ItemC);
             itema.setOnClickListener(this);
             itemb.setOnClickListener(this);
+            itemc.setOnClickListener(this);
 
             layout.measure(View.MeasureSpec.UNSPECIFIED,
                     View.MeasureSpec.UNSPECIFIED);
             mDropdown = new PopupWindow(layout, FrameLayout.LayoutParams.WRAP_CONTENT,
-                    FrameLayout.LayoutParams.WRAP_CONTENT,true);
+                    FrameLayout.LayoutParams.WRAP_CONTENT, true);
             Drawable background = getResources().getDrawable(android.R.drawable.editbox_dropdown_dark_frame);
             mDropdown.setBackgroundDrawable(background);
-            mDropdown.showAsDropDown(mBinding.caseViewImg, 5, 5);
-
+            mDropdown.showAsDropDown(mBinding.caseViewImg, 0, 0);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return mDropdown;
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(data == null)  return;
+        switch (requestCode) {
+            case ExtWebViewClient.RESULT_LOCATION:
+                Location loc = (Location) data.getSerializableExtra(ExtWebViewClient.LOCATION_DATA);
+                Log.e(TAG, loc.toString());
+                break;
+        }
     }
 }
