@@ -26,6 +26,7 @@ function geocodeLatLng(geocoder, map, infoWindow, latlng) {
 }
 
 function callback(results, status) {
+	clearItem();
 	if (status === google.maps.places.PlacesServiceStatus.OK) {
 		for (var i = 0; i < results.length; i++) {
 			//createMarker(results[i]);
@@ -90,4 +91,14 @@ function createMarker(place) {
 		infoWindow.open(map, this);
 		map.panTo(placeLoc);
 	});
+}
+
+function searchTxt(txt) {
+	var request = {
+		location: lastPos,
+		radius: 500,
+		query: txt
+	};
+
+	service.textSearch(request, callback);
 }

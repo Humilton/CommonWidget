@@ -25,7 +25,7 @@
 	<link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css">
 	<script src="jquery/jquery-1.11.3.min.js"></script>
 	<script src="jquery/jquery.mobile-1.4.5.min.js"></script>
-	<link rel="stylesheet" href="css/map.css">
+	<link rel="stylesheet" href="map.css">
 	<script src="map.js"></script>
 </head>
 <body>
@@ -35,40 +35,17 @@
 		<div id="submitdiv" style="float: right;"><img src='img/btn_submit.png' id="img_submit" ></div>
 
 		<div id="searchdiv">
-	    <ul id="search" data-role="listview" data-inset="true" data-filter="true" data-filter-reveal="true" data-filter-placeholder="搜索附近位置...">    <li><a href="#">Acura</a></li>
-    <li><a href="#">Audi</a></li>
-    <li><a href="#">BMW</a></li>
-    <li><a href="#">Cadillac</a></li>
-    <li><a href="#">Chrysler</a></li>
-    <li><a href="#">Dodge</a></li>
-    <li><a href="#">Ferrari</a></li>
-    <li><a href="#">Ford</a></li>
-    <li><a href="#">GMC</a></li>
-    <li><a href="#">Honda</a></li>
-    <li><a href="#">Hyundai</a></li>
-    <li><a href="#">Infiniti</a></li>
-    <li><a href="#">Jeep</a></li>
-    <li><a href="#">Kia</a></li>
-    <li><a href="#">Lexus</a></li>
-    <li><a href="#">Mini</a></li>
-    <li><a href="#">Nissan</a></li>
-    <li><a href="#">Porsche</a></li>
-    <li><a href="#">Subaru</a></li>
-    <li><a href="#">Toyota</a></li>
-    <li><a href="#">Volkswagen</a></li>
-    <li><a href="#">Volvo</a></li>
-</ul></div>
-
-	
-		
-
+	    <!-- <ul id="search" data-inset="true" data-filter="true" data-corners="true" data-filter-placeholder="搜索附近位置..."></ul> -->
+	    <input id="search" type="search" value="" data-corners="true" style="border-radius:5px" placeholder="搜索附近位置...">
+	    </div>
 	</div>
+
 	<div id="map"></div>
 	<ul id="listplace" data-role="listview" data-inset="true"></ul>
 
-	<script>
+	<script type="text/javascript">
 	var initSize = function() {
-		var halfEm = parseInt($("#backdiv").css("margin"));
+		var halfEm = parseInt($("#backdiv").css("margin-top"));
 		var headheight = $("#header").height() + halfEm * 2;
 		$("#searchdiv").css("margin-left", headheight).css("margin-right", headheight);
 
@@ -77,8 +54,14 @@
 		$("#listplace").height(restHeight * 0.6);
 	}
 
-	$(document).ready(initSize);
-	$( window ).resize(initSize);
+	$(function() { 
+		$("#search").textinput({ disabled: true })
+		initSize();
+		$( window ).resize(initSize);
+		$("#search").bind( "change", function() {
+		   searchTxt($("#search").val());
+		});
+	});
 
 	$("#backdiv").click(function() {
 		location.href = "vbox://vigourbox?action=close";
@@ -93,9 +76,10 @@
 		location.href = url;
 
 	}) ;
+
 	</script>
 
-	<script>
+	<script type="text/javascript">
 		var map;
 		var marker;
 		var service;
@@ -114,17 +98,18 @@
 		var lat = parseFloat(getParameterByName('lat'));
 	  	var lon = parseFloat(getParameterByName('lon'));
 	  	if(lat && lon) {
+	  		$("#search").textinput({ disabled: false })
 	  		var pos = {
     			lat: lat,
     			lng: lon
     		};
-    		console.log(lat + ", " + lon);
     		locateMap(pos);
 	  	}
 	  	else {
 	        // Try HTML5 geolocation.
 	        if (navigator.geolocation) {
 	        	navigator.geolocation.getCurrentPosition(function(position) {
+	        		$("#search").textinput({ disabled: false })
 	        		var pos = {
 	        			lat: position.coords.latitude,
 	        			lng: position.coords.longitude
@@ -146,9 +131,14 @@
 			var content = $('<li onclick="handleClick(this)" locidx=' + i + ' class="ui-li-static ui-body-inherit">' +  
 		    	//'<img src="' + item.icon + '" class="ui-li-thumb ui-corner-tl"> ' +
 				'<h3 class="ui-li-heading">' + item.name + '</h3>' +
-				'<p class="ui-li-desc">' + item.vicinity + '</p>' + 
+				'<p class="ui-li-desc">' + item.vicinity ? item.vicinity : item.formatted_address + '</p>' + 
 				'</li>');
 		    $("#listplace").append(content);
+		}
+
+		var clearItem = function() {
+			idxLoc = {};
+			$("#listplace").empty();
 		}
 
 		var handleClick = function(item) {

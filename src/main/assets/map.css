@@ -41,3 +41,8 @@ html, body {
 	overflow: scroll;
 	-webkit-overflow-scrolling: touch;
 }
+
+.ui-corner-all {
+    -webkit-border-radius: 1em;
+    border-radius: 1em;
+}
