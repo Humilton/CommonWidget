@@ -46,3 +46,7 @@ html, body {
     -webkit-border-radius: 1em;
     border-radius: 1em;
 }
+
+.gm-style-mtc {
+    visibility: hidden;
+}

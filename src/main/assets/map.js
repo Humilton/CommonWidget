@@ -53,6 +53,21 @@ var centerPos = function(pos , addr) {
     infoWindow.open(map, marker);
 }
 
+var centerPos2 = function(pos , addr) {
+	lastPos = pos;
+	lastAddr = addr;
+	if(!marker) {
+		marker = new google.maps.Marker({
+	      position: pos,
+	      icon: 'img/location_marker.png',
+	      map: map
+	    });
+	}
+	else {
+		marker.setPosition( pos );
+	}
+}
+
 function locationError(error, infoWindow, pos) {
 	infoWindow = new google.maps.InfoWindow({map: map});
 	infoWindow.setPosition(pos);

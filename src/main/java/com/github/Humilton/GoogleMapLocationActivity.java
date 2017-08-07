@@ -25,50 +25,14 @@ public class GoogleMapLocationActivity extends BaseActivity<MapBinding> {
 
     @Override
     public void initView() {
-//        mBinding.titleBar.setRightLayoutClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mBinding.webview.reload();
-//            }
-//        });
-
-//        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-//                ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//
-//            ActivityCompat.requestPermissions(mContext,
-//                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
-//                    REQUEST_CODE_ASK_LOCATION_PERMISSIONS);
-//            return;
+//        String mapUrl = getString(R.string.google_map_url);
+//        if(DemoApp.location != null) {
+//            mapUrl += "?lat=" + DemoApp.location.getLatitude() + "&lon=" + DemoApp.location.getLongitude();
 //        }
-//        else {
-//            mBinding.webview.loadUrl(getString(R.string.google_map_url));
-//        }
+//        Log.e("==>", "mapUrl = " + mapUrl);
+//        mBinding.webview.loadUrl(mapUrl);
 
-        String mapUrl = getString(R.string.google_map_url);
-        if(DemoApp.location != null) {
-            mapUrl += "?lat=" + DemoApp.location.getLatitude() + "&lon=" + DemoApp.location.getLongitude();
-        }
-        Log.e("==>", "mapUrl = " + mapUrl);
+        String mapUrl = "file:///android_asset/travel.html?pos=30.4842586517334|114.4147796630859|湖北省武汉市洪山区南湖大道|30.48876571655273|114.4176712036133|湖北省武汉市洪山区关山大道532号|30.48878860473633|114.4175262451172|湖北省武汉市洪山区关山大道532号|30.4887580871582|114.4176330566406|湖北省武汉市洪山区关山大道532号|30.48859786987305|114.41748046875|湖北省武汉市洪山区关山大道530号";
         mBinding.webview.loadUrl(mapUrl);
     }
-
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-//                                           @NonNull int[] grantResults) {
-//        if (requestCode == REQUEST_CODE_ASK_LOCATION_PERMISSIONS) {
-//            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-//                // Permission Denied
-//                Toast.makeText(mContext, R.string.location_denied, Toast.LENGTH_SHORT).show();
-//            } else {
-//                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-//                        ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                    return;
-//                }
-//            }
-//
-//            mBinding.webview.loadUrl(getString(R.string.google_map_url));
-//        }
-//        else {
-//            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        }
-//    }
 }

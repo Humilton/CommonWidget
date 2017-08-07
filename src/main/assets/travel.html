@@ -1,0 +1,212 @@
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<title>Geolocation</title>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta charset="utf-8">
+		<style>
+			/* Always set the map height explicitly to define the size of the div
+			* element that contains the map. */
+			#header {
+				height: 2.2em;
+				padding: 0 0 1em 0;
+				z-index:1;
+			}
+
+			#backdiv, #submitdiv, #img_back, #img_submit {
+				height: 100%;
+			}
+
+			 #searchdiv {
+				height: 2.2em;
+				text-align: center;
+				vertical-align: middle;
+				line-height: 2.2em;
+			}
+
+			#backdiv, #submitdiv {
+				margin: 0.5em;
+			}
+
+			#pagecontainer {
+				width: 100%;
+				height: 20vh;
+				position: absolute;
+				bottom:3vw;
+				z-index: 1;
+				background-color: transparent;
+				/*overflow: hidden;*/
+			}
+
+			/* vue */
+			.my-swipe {
+		      height: 200px;
+		      color: #fff;
+/*		      font-size: 30px;*/
+		      /*text-align: center;*/
+		      /*padding: 0vh 3vw;*/
+		      /*margin: 0vh 3vw;*/
+		    }
+
+		    .swipe-content {
+		      background-color: #ffffff;
+		      color: #000;
+
+		    	margin: 0vh 3vw;
+		    	height: 100%;
+		    	/*text-align: left;*/
+		    	padding: 0.2em 0.8em;
+		    }
+
+		</style>
+	<link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css">
+	<script src="jquery/jquery-1.11.3.min.js"></script>
+	<script src="jquery/jquery.mobile-1.4.5.min.js"></script>
+	<link rel="stylesheet" href="vue/vue-swipe.css">
+	<script src="vue/vue.js"></script>
+	<script src="vue/vue-swipe.js"></script>
+	<link rel="stylesheet" href="map.css">
+	<script src="map.js"></script>
+</head>
+<body>
+	<div id="header" data-role="header">
+		<div id="backdiv" style="float: left;"><img src='img/btn_back.png' id="img_back"></div>
+		<div id="searchdiv">行程路线</div>
+	</div>
+
+	<div id="map"></div>
+
+	<div id="pagecontainer">
+		<swipe class="my-swipe" :auto="0" :show-indicators="false" v-on:index-change="indexChange">
+	    </swipe>
+	</div>
+
+
+	<script type="text/javascript">
+	var initSize = function() {
+		var halfEm = parseInt($("#backdiv").css("margin-top"));
+		var headheight = $("#header").height() + halfEm * 2;
+		$("#searchdiv").css("margin-left", headheight).css("margin-right", headheight);
+
+		var restHeight = $(window).height() - headheight;
+		$("#map").height(restHeight);
+	}
+
+	$(function() { 
+		initSize();
+		$( window ).resize(initSize);
+	});
+
+	$("#backdiv").click(function() {
+		location.href = "vbox://vigourbox?action=close";
+	}) ;
+
+	const vueSwipe = VueSwipe.Swipe;
+	const vueSwipeItem = VueSwipe.SwipeItem;
+
+	var swipeEle;
+
+
+	</script>
+
+	<script type="text/javascript">
+		var map;
+		var marker;
+		var service;
+		var infoWindow;
+		var geocoder;
+		var path = [{lat: 39.903333, lng: 116.391667, addr: ""}];       // A list like {lat, lng, addr}
+
+		$(function() { 
+			var posStr = getParameterByName('pos');
+			if(!posStr) return;
+			var pos = posStr.split("|");
+			path = [];
+			for(var i=0;i<pos.length;i+=3) {
+				if(!pos[i] || !pos[i+1]) break;
+				if(pos[i] == '0.0' && pos[i+1]=='0.0') continue;
+				path[i/3] = {lat: parseFloat(pos[i]), lng : parseFloat(pos[i+1]), addr : pos[i+2]};
+			}
+			if(path.length == 0) {   // no data split by |
+				path = [{lat: 39.903333, lng: 116.391667, addr: ""}];
+			}
+		});
+
+		function initMap() {
+			map = new google.maps.Map(document.getElementById('map'), {
+				center: path[0],
+				zoom: 16
+			});
+
+			map.panTo(path[0]);
+			centerPos2(path[0], path[0].addr);
+
+			// Define a symbol using a predefined path (an arrow)
+			// supplied by the Google Maps JavaScript API.
+			var lineSymbol = {
+			  path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+			};
+
+			// Create the polyline and add the symbol via the 'icons' property.
+			var line = new google.maps.Polyline({
+			  path: path,
+			  icons: [{
+			    icon: lineSymbol,
+			    offset: '100%'
+			  }],
+			  map: map
+			});
+
+			for(var i=0;i<path.length;i++) {
+				var pos = path[i];
+				var marker = new google.maps.Marker({
+			      position: pos,
+			      icon: 'img/ico_location.png',
+			      map: map,
+			      idx : i
+			    });
+
+			    var content = $('<swipe-item><div class="swipe-content">' + pos.addr + '</div></swipe-item>');
+			    $(".my-swipe").append(content);
+
+			    marker.addListener('click', function() {
+			      if(this.idx == swipeEle.index) return;
+		          map.panTo(this.position);
+		          centerPos2(this.position, this.position.addr);
+		          swipeEle.swipeTo(this.idx);
+		        });
+			}
+
+			swipeEle = new Vue({
+				  el: '#pagecontainer',
+				  components: {
+				    'swipe': vueSwipe,
+				    'swipe-item': vueSwipeItem
+				  },
+				  methods: {
+				    indexChange: function () {
+				      map.panTo(path[swipeEle.index]);
+		          	  centerPos2(path[swipeEle.index], path[swipeEle.index].addr);
+				    }
+				  }
+				}).$children[0];
+	  }
+
+		function getParameterByName(name, url) {
+		    if (!url) url = window.location.href;
+		    name = name.replace(/[\[\]]/g, "\\$&");
+		    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		        results = regex.exec(url);
+		    if (!results) return null;
+		    if (!results[2]) return '';
+		    return decodeURIComponent(results[2].replace(/\+/g, " "));
+		}
+	</script>
+
+	<script async defer
+		src="http://maps.google.cn/maps/api/js?key=AIzaSyCL4YJmuMHOJw9TzXZ3WKLVqUxk_0EbblU&libraries=drawing&callback=initMap">
+	</script>
+	<!-- <script src="maps.api.js"></script> -->
+
+</body>
+</html>
