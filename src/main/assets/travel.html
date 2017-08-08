@@ -1,7 +1,7 @@
 	<!DOCTYPE html>
 	<html>
 	<head>
-		<title>Geolocation</title>
+		<title>GoogleMap : 路线</title>
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 		<meta charset="utf-8">
 		<style>
@@ -11,6 +11,7 @@
 				height: 2.2em;
 				padding: 0 0 1em 0;
 				z-index:1;
+				background-color: #fff;
 			}
 
 			#backdiv, #submitdiv, #img_back, #img_submit {
@@ -18,10 +19,10 @@
 			}
 
 			 #searchdiv {
-				height: 2.2em;
+				height: 3.2em;
 				text-align: center;
 				vertical-align: middle;
-				line-height: 2.2em;
+				line-height: 3.2em;
 			}
 
 			#backdiv, #submitdiv {
@@ -35,17 +36,47 @@
 				bottom:3vw;
 				z-index: 1;
 				background-color: transparent;
-				/*overflow: hidden;*/
 			}
 
 			/* vue */
 			.my-swipe {
 		      height: 200px;
 		      color: #fff;
-/*		      font-size: 30px;*/
-		      /*text-align: center;*/
-		      /*padding: 0vh 3vw;*/
-		      /*margin: 0vh 3vw;*/
+		    }
+
+		    .posaddr {
+		    	float:left;
+		    	overflow: hidden;
+		    	white-space: nowrap;
+		    	display: inline-block;
+			    white-space: nowrap;
+			    text-overflow: ellipsis;
+		    }
+
+		    .calcway {
+		    	display: block;
+    			margin: auto 0;
+		    }
+
+		    .dist {
+		    	float: right;
+		    	background-color: #378BeB;
+		    	color: #fff;
+		    	border-radius: 8px;
+		    	padding: 0.4em 0.6em;
+		    }
+
+		    /*.posaddr, .calcway, .dist {
+		    	display: table-cell;
+		    	text-align:center;
+		    	vertical-align:middle;
+		    	margin : auto 0;
+		    }*/
+
+		    .swipetop, .swipebottom {
+		    	width:100%;
+		    	height: 40%;
+		    	display: table;
 		    }
 
 		    .swipe-content {
@@ -54,8 +85,7 @@
 
 		    	margin: 0vh 3vw;
 		    	height: 100%;
-		    	/*text-align: left;*/
-		    	padding: 0.2em 0.8em;
+		    	padding: 0em 1.6em;
 		    }
 
 		</style>
@@ -106,7 +136,6 @@
 
 	var swipeEle;
 
-
 	</script>
 
 	<script type="text/javascript">
@@ -116,6 +145,7 @@
 		var infoWindow;
 		var geocoder;
 		var path = [{lat: 39.903333, lng: 116.391667, addr: ""}];       // A list like {lat, lng, addr}
+		var startPos ;
 
 		$(function() { 
 			var posStr = getParameterByName('pos');
@@ -130,6 +160,11 @@
 			if(path.length == 0) {   // no data split by |
 				path = [{lat: 39.903333, lng: 116.391667, addr: ""}];
 			}
+
+			startPos = getLatLng(function(pos) {
+				usrLocaleState = 1;
+				initDistance(pos);
+			});
 		});
 
 		function initMap() {
@@ -140,6 +175,7 @@
 
 			map.panTo(path[0]);
 			centerPos2(path[0], path[0].addr);
+			initDirection();
 
 			// Define a symbol using a predefined path (an arrow)
 			// supplied by the Google Maps JavaScript API.
@@ -166,9 +202,6 @@
 			      idx : i
 			    });
 
-			    var content = $('<swipe-item><div class="swipe-content">' + pos.addr + '</div></swipe-item>');
-			    $(".my-swipe").append(content);
-
 			    marker.addListener('click', function() {
 			      if(this.idx == swipeEle.index) return;
 		          map.panTo(this.position);
@@ -177,36 +210,90 @@
 		        });
 			}
 
-			swipeEle = new Vue({
-				  el: '#pagecontainer',
-				  components: {
-				    'swipe': vueSwipe,
-				    'swipe-item': vueSwipeItem
-				  },
-				  methods: {
-				    indexChange: function () {
-				      map.panTo(path[swipeEle.index]);
-		          	  centerPos2(path[swipeEle.index], path[swipeEle.index].addr);
-				    }
-				  }
-				}).$children[0];
+			initDistance();
 	  }
 
-		function getParameterByName(name, url) {
-		    if (!url) url = window.location.href;
-		    name = name.replace(/[\[\]]/g, "\\$&");
-		    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-		        results = regex.exec(url);
-		    if (!results) return null;
-		    if (!results[2]) return '';
-		    return decodeURIComponent(results[2].replace(/\+/g, " "));
+	var origlocationError = locationError;
+	locationError = function(error, infoWindow, pos) {
+		usrLocaleState = 2;
+		initDistance();
+		return origlocationError(error, infoWindow, pos);
+	}
+
+	  var getDistance = function(from, to) {
+	  	var dist = distance(from.lat, from.lng, to.lat, to.lng);
+	  	var res = dist > 1 ? dist.toFixed(1) + " km" : (dist*1000).toFixed(1) + " m";
+  		return res;
+	  }
+
+	  var usrLocaleState = 0;
+	  function initDistance(_pos) {
+	  	if(!_pos) _pos = startPos;
+
+	  	var content = '<swipe class="my-swipe" :auto="0" :show-indicators="false" v-on:index-change="indexChange">';
+	  	for(var i=0;i<path.length;i++) {
+	  		var pos = path[i];
+		    content += ('<swipe-item><div class="swipe-content">' +
+		    	'<div class="swipetop">' + 
+		    		'<H3 class="posaddr">' + pos.addr + '</H3>' + 
+		    		'<div class="dist">' + (usrLocaleState != 1 ? 'Unknown' : getDistance(_pos, pos)) + '</div>' + 
+		    	'</div>' +
+		    	'<div class="swipebottom"><img class="calcway" src="img/me_box.png" alt="' + pos.addr + '" onclick="wayTo(' + pos.lat + "," + pos.lng + ')"></div>' + 
+		    	'</div></swipe-item>');
 		}
+		content += '</swipe>';
+		$("#pagecontainer").empty().append(content);
+
+		swipeEle = new Vue({
+			  el: '#pagecontainer',
+			  components: {
+			    'swipe': vueSwipe,
+			    'swipe-item': vueSwipeItem
+			  },
+			  methods: {
+			    indexChange: function () {
+			      map.panTo(path[swipeEle.index]);
+	          	  centerPos2(path[swipeEle.index], path[swipeEle.index].addr);
+			    }
+			  }
+			}).$children[0];
+
+		$(".posaddr").width($(".swipetop").width() - $('.dist').width() - parseFloat($('.dist').css('padding-left'))*2 - 10);
+		$('.dist').css("margin-top", parseFloat($(".posaddr").css("margin-top")) - parseFloat($(".dist").css("padding-top")));
+	  }
+
+	  var directionsDisplay;
+	  var directionsService;
+	  function initDirection() {
+		directionsDisplay = new google.maps.DirectionsRenderer();
+		directionsService = new google.maps.DirectionsService();
+		directionsDisplay.setMap(map);
+	  }
+
+	  var wayTo = function(toLat, toLng) {
+	  	if(usrLocaleState != 1){
+	  		alert("User location unknown!");
+	  		return;
+	  	} 
+
+		var request = {
+			origin: startPos,
+			destination: {lat: toLat, lng: toLng},
+			travelMode: 'DRIVING'
+		};
+		directionsService.route(request, function(result, status) {
+			if (status == 'OK') {
+				directionsDisplay.setDirections(result);
+			}
+		});
+	  }
+
+
 	</script>
 
 	<script async defer
 		src="http://maps.google.cn/maps/api/js?key=AIzaSyCL4YJmuMHOJw9TzXZ3WKLVqUxk_0EbblU&libraries=drawing&callback=initMap">
 	</script>
-	<!-- <script src="maps.api.js"></script> -->
 
 </body>
 </html>
