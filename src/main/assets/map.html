@@ -1,146 +1,193 @@
-	<!DOCTYPE html>
-	<html>
-	<head>
-		<title>GoogleMap : 附近</title>
-		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-		<meta charset="utf-8">
-		<style>
-			/* Always set the map height explicitly to define the size of the div
-			* element that contains the map. */
-			#header {
-				height: 2.2em;
-				padding: 0 0 1em 0;
-				z-index:1;
-				background-color: #FFFFFF;
-			}
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>GoogleMap : 附近</title>
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+        <meta charset="utf-8">
+        <style>
+            /* Always set the map height explicitly to define the size of the div
+            * element that contains the map. */
+            #header {
+                height: 2.2em;
+                padding: 0 0 1em 0;
+                z-index:1;
+                background-color: #FFFFFF;
+            }
 
-			#backdiv, #submitdiv, #img_back, #img_submit {
-				height: 100%;
-			}
+            #backdiv, #submitdiv, #img_back, #img_submit {
+                height: 100%;
+            }
 
-			#backdiv, #submitdiv {
-				margin: 0.5em;
-			}
+            #backdiv, #submitdiv {
+                margin: 0.5em;
+            }
 
-			#listplace > li {
-				padding: .7em 1em;
-			}
+            #listplace > li {
+                padding: .7em 1em;
+            }
 
-			#listplace > li > h3 {
-				margin: .4em 0em;
-			}
+            #listplace > li > h3 {
+                margin: .4em 0em;
+            }
 
-			#listplace > li > p {
-				margin: .3em 0em;
-			}
+            #listplace > li > p {
+                margin: .3em 0em;
+            }
 
-		</style>
-	<link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css">
-	<script src="jquery/jquery-1.11.3.min.js"></script>
-	<script src="jquery/jquery.mobile-1.4.5.min.js"></script>
-	<link rel="stylesheet" href="map.css">
-	<script src="map.js"></script>
+            #heightChanger {
+            	width: 100%;
+            	height: 3vh;
+            	background-color: #DDDDDD;
+            }
+
+        </style>
+    <script src="jquery/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css">
+    <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
+    <link rel="stylesheet" href="map.css">
+    <script src="map.js"></script>
 </head>
 <body>
-	<div id="header" data-role="header">
-		
-		<div id="backdiv" style="float: left;"><img src='img/btn_back.png' id="img_back"></div>
-		<div id="submitdiv" style="float: right;"><img src='img/btn_submit.png' id="img_submit" ></div>
+    <div id="header" data-role="header">
+        
+        <div id="backdiv" style="float: left;"><img src='img/btn_back.png' id="img_back"></div>
+        <div id="submitdiv" style="float: right;"><img src='img/btn_submit.png' id="img_submit" ></div>
 
-		<div id="searchdiv">
-	    <!-- <ul id="search" data-inset="true" data-filter="true" data-corners="true" data-filter-placeholder="搜索附近位置..."></ul> -->
-	    <input id="search" type="search" value="" data-corners="true" style="border-radius:5px" placeholder="搜索附近位置...">
-	    </div>
-	</div>
+        <div id="searchdiv">
+        <!-- <ul id="search" data-inset="true" data-filter="true" data-corners="true" data-filter-placeholder="搜索附近位置..."></ul> -->
+        <input id="search" type="search" value="" data-corners="true" style="border-radius:5px" placeholder="搜索附近位置...">
+        </div>
+    </div>
 
-	<div id="map"></div>
-	<ul id="listplace" data-role="listview" data-inset="true"></ul>
+    <div id="map"></div>
+    <div id="heightChanger" draggable="true" ondragstart="dragStart(event)" ondrag="dragging(event)" ondragend="dragEnd(event)" ></div>
+    <ul id="listplace" data-role="listview" data-inset="true"></ul>
 
-	<script type="text/javascript">
-	var initSize = function() {
-		var halfEm = parseInt($("#backdiv").css("margin-top"));
-		var headheight = $("#header").height() + halfEm * 2;
-		$("#searchdiv").css("margin-left", headheight).css("margin-right", headheight);
+    <script type="text/javascript">
+    var isSystemMobile = isSystemMobile();
+    var initSize = function() {
+        var halfEm = parseInt($("#backdiv").css("margin-top"));
+        var headheight = $("#header").height() + halfEm * 2;
+        $("#searchdiv").css("margin-left", headheight).css("margin-right", headheight);
 
-		var restHeight = $(window).height() - headheight;
-		$("#map").height(restHeight * 0.4);
-		$("#listplace").height(restHeight * 0.6);
+        var restHeight = $(window).height() - headheight - $("#heightChanger").height();
+        $("#map").height(restHeight * 0.4);
+        $("#listplace").height(restHeight * 0.6);
+
+		var el = document.getElementById('heightChanger'); 
+		el.addEventListener("touchstart", dragStart, false);
+		el.addEventListener("touchend", dragEnd, false);
+		el.addEventListener("touchcancel", dragCancel, false);
+		el.addEventListener("touchleave", dragEnd, false);
+		el.addEventListener("touchmove", dragging, false);
 	}
 
-	$(function() { 
-		$("#search").textinput({ disabled: true })
-		initSize();
-		$( window ).resize(initSize);
-		$("#search").bind( "change", function() {
-		   searchTxt($("#search").val());
-		});
-	});
+    var startScreenY, delayY = 0;
+    var prevMapHeight, prevListHeight;
+    function dragStart(event) {
+    	startScreenY = event.touches ? event.touches[0].screenY : event.screenY;
+    	prevMapHeight = $("#map").height();
+    	prevListHeight = $("#listplace").height();
+    	if(isSystemMobile) event.preventDefault();
+	}
 
-	$("#backdiv").click(function() {
-		location.href = "vbox://vigourbox?action=close";
-	}) ;
+	function dragging(event) {
+		delayY =  (event.touches ? event.touches[0].screenY : event.screenY) - startScreenY;
+		var mapHeight = prevMapHeight + delayY;
+		var listHeight = prevListHeight - delayY;
+		if(mapHeight >= 0 && listHeight >= 0) {
+			$("#map").height(mapHeight);
+        	$("#listplace").height(listHeight);
+    	}
+    	if(isSystemMobile) event.preventDefault();
+	}
 
-	$("#submitdiv").click(function() {
-		var url = "vbox://vigourbox?action=submit";
-		console.log(url);
-		if(lastPos && lastAddr)
-			url += "&lat=" + lastPos.lat() + "&lon=" + lastPos.lng() + "&addr=" + lastAddr;
+	function dragEnd(event) {
+		google.maps.event.trigger(map, 'resize');
+		if(isSystemMobile) event.preventDefault();
+	}
 
-		location.href = url;
+	function dragCancel(event) {
+		google.maps.event.trigger(map, 'resize');
+		if(isSystemMobile) event.preventDefault();
+	}
 
-	});
+    $(function() { 
+        $("#search").textinput({ disabled: true })
+        initSize();
+        $( window ).resize(initSize);
+        $("#search").bind( "change", function() {
+           searchTxt($("#search").val());
+        });
+    });
 
-	</script>
+    $("#backdiv").click(function() {
+        location.href = "vbox://vigourbox?action=close";
+    }) ;
 
-	<script type="text/javascript">
-		var map;
-		var marker;
-		var service;
-		var infoWindow;
-		var geocoder;
-		var idxLoc = {};       // A map like {index, location}
+    $("#submitdiv").click(function() {
+        var url = "vbox://vigourbox?action=submit";
+        console.log(url);
+        if(lastPos && lastAddr)
+            url += "&lat=" + lastPos.lat() + "&lon=" + lastPos.lng() + "&addr=" + lastAddr;
 
-		function initMap() {
-			map = new google.maps.Map(document.getElementById('map'), {
-				center: {lat: 39.903333, lng: 116.391667},
-				zoom: 14
-			});
-			service = new google.maps.places.PlacesService(map);
-			geocoder = new google.maps.Geocoder;
+        location.href = url;
 
-            var pos = getLatLng(function(pos) {
+    });
+
+    </script>
+
+    <script type="text/javascript">
+        var map;
+        var marker;
+        var service;
+        var infoWindow;
+        var geocoder;
+        var idxLoc = {};       // A map like {index, location}
+        var userPos;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 39.903333, lng: 116.391667},
+                zoom: 14
+            });
+            service = new google.maps.places.PlacesService(map);
+            geocoder = new google.maps.Geocoder;
+
+            getLatLng(function(pos) {
                 // Here use LatLng
+                userPos = pos;
                 $("#search").textinput({ disabled: false });
                 locateMap(pos);
             });
-	   }
+       }
 
-		var addItem = function(item, i) {
+        var addItem = function(item, i) {
             //console.log(i + " | " + item.name + " | " + (item.vicinity ? item.vicinity : item.formatted_address));
-			var content = $('<li onclick="handleClick(this)" locidx=' + i + ' class="ui-li-static ui-body-inherit">' +  
-		    	//'<img src="' + item.icon + '" class="ui-li-thumb ui-corner-tl"> ' +
-				'<h3 class="ui-li-heading">' + item.name + '</h3>' +
-				'<p class="ui-li-desc">' + (item.vicinity ? item.vicinity : item.formatted_address) + '</p>' + 
-				'</li>');
-		    $("#listplace").append(content);
-		}
+            var content = $('<li onclick="handleClick(this)" locidx=' + i + ' class="ui-li-static ui-body-inherit">' +  
+                //'<img src="' + item.icon + '" class="ui-li-thumb ui-corner-tl"> ' +
+                '<h3 class="ui-li-heading">' + item.name + '</h3>' +
+                '<p class="ui-li-desc">' + (item.vicinity ? item.vicinity : item.formatted_address) + '</p>' + 
+                '</li>');
+            $("#listplace").append(content);
+        }
 
-		var clearItem = function() {
-			idxLoc = {};
-			$("#listplace").empty();
-		}
+        var clearItem = function() {
+            idxLoc = {};
+            $("#listplace").empty();
+        }
 
-		var handleClick = function(item) {
-			var i = parseInt($(item).attr("locidx"));
-			console.log(i + " : " + idxLoc[parseInt(i)].name );
-			centerPos(idxLoc[parseInt(i)].geometry.location, idxLoc[parseInt(i)].name);
-		}
+        var handleClick = function(item) {
+            var i = parseInt($(item).attr("locidx"));
+            console.log(i + " : " + idxLoc[parseInt(i)].name );
+            centerPos(idxLoc[parseInt(i)].geometry.location, idxLoc[parseInt(i)].name);
+        }
 
-	</script>
+    </script>
 
-	<script async defer
-		src="http://maps.google.cn/maps/api/js?key=AIzaSyCL4YJmuMHOJw9TzXZ3WKLVqUxk_0EbblU&libraries=places&callback=initMap">
-	</script>
+    <script async defer
+        src="http://maps.google.cn/maps/api/js?key=AIzaSyCL4YJmuMHOJw9TzXZ3WKLVqUxk_0EbblU&libraries=places&callback=initMap">
+    </script>
 
 </body>
 </html>
