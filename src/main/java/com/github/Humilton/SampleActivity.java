@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -25,6 +27,8 @@ import com.github.Humilton.databinding.SampleBinding;
 import com.github.Humilton.entity.Location;
 import com.github.Humilton.util.GlideCircleTransform;
 import com.github.Humilton.util.ImageUtil;
+import com.github.Humilton.util.Md5Util;
+import com.github.Humilton.util.StringUtil;
 import com.github.Humilton.view.ExtWebViewClient;
 import com.github.Humilton.view.ShowCaseView;
 
@@ -79,6 +83,34 @@ public class SampleActivity extends BaseSampleActivity<SampleBinding> implements
         String url1 = "https://ak3.picdn.net/shutterstock/videos/3514871/thumb/1.jpg";
         Glide.with(mContext).load(url1).placeholder(R.mipmap.holder).into(mBinding.imgContent);
         Glide.with(mContext).load("http://BadUrl/").thumbnail(ImageUtil.defaultPlaceHolder(mContext)).transform(new GlideCircleTransform(mContext)).into(mBinding.imgAdmin);
+
+        Log.e(TAG, getSign("123456", null));
+        Log.e(TAG, Md5Util.encrypt("##123456##", Md5Util.EncodeStrategy.ENCODE_HEX, Md5Util.CaseStrategy.UPPER_CASE));
+
+        mBinding.passwdTxt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length() == 6)
+                    Log.e(TAG, s.toString());
+            }
+        });
+    }
+
+    public static String getSign(String imei, Long timestamp) {
+        String[] arr = {"##", imei, timestamp == null ? null : timestamp.toString()};
+        Log.e(TAG, "==>" + StringUtil.join(arr, "##"));
+        //System.out.println(StringUtil.join(arr, C.System.SIGN_KEY));
+        return Md5Util.encrypt(StringUtil.join(arr, "##"), Md5Util.EncodeStrategy.ENCODE_HEX, Md5Util.CaseStrategy.UPPER_CASE);
     }
 
     private Runnable initRunnable() {
