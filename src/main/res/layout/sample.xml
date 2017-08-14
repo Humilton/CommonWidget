@@ -82,6 +82,16 @@
                 />
         </LinearLayout>
 
+        <com.github.Humilton.view.PasswordEditText
+            android:id="@+id/passwd_txt"
+            android:layout_width="570px"
+            android:layout_height="90px"
+            android:layout_gravity="center"
+            android:layout_margin="10px"
+            android:maxLength="6"
+            android:textColor="#000000"
+            android:textSize="20.4sp" />
+
         <ImageView
             android:id="@+id/case_view_img"
             android:layout_width="90dp"
@@ -112,14 +122,5 @@
                 android:layout_marginLeft="10dp"/>
 
         </LinearLayout>
-
-        <com.github.Humilton.view.PasswordEditText
-            android:id="@+id/passwd_txt"
-            android:layout_width="570px"
-            android:layout_height="90px"
-            android:layout_gravity="center"
-            android:maxLength="6"
-            android:textColor="#000000"
-            android:textSize="20.4sp" />
     </LinearLayout>
 </layout>

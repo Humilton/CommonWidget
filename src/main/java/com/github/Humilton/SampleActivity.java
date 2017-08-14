@@ -84,8 +84,11 @@ public class SampleActivity extends BaseSampleActivity<SampleBinding> implements
         Glide.with(mContext).load(url1).placeholder(R.mipmap.holder).into(mBinding.imgContent);
         Glide.with(mContext).load("http://BadUrl/").thumbnail(ImageUtil.defaultPlaceHolder(mContext)).transform(new GlideCircleTransform(mContext)).into(mBinding.imgAdmin);
 
-        Log.e(TAG, getSign("123456", null));
-        Log.e(TAG, Md5Util.encrypt("##123456##", Md5Util.EncodeStrategy.ENCODE_HEX, Md5Util.CaseStrategy.UPPER_CASE));
+//        Log.e(TAG, getSign("123456", null));
+//        Log.e(TAG, Md5Util.encrypt("##123456##", Md5Util.EncodeStrategy.ENCODE_HEX, Md5Util.CaseStrategy.UPPER_CASE));
+
+        Float a = null;
+        Log.e(TAG, String.format("%1$.1fM", a));
 
         mBinding.passwdTxt.addTextChangedListener(new TextWatcher() {
             @Override

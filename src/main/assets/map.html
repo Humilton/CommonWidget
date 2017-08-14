@@ -49,7 +49,7 @@
 </head>
 <body>
     <div id="header" data-role="header">
-        
+
         <div id="backdiv" style="float: left;"><img src='img/btn_back.png' id="img_back"></div>
         <div id="submitdiv" style="float: right;"><img src='img/btn_submit.png' id="img_submit" ></div>
 
@@ -74,13 +74,13 @@
         $("#map").height(restHeight * 0.4);
         $("#listplace").height(restHeight * 0.6);
 
-		var el = document.getElementById('heightChanger'); 
-		el.addEventListener("touchstart", dragStart, false);
-		el.addEventListener("touchend", dragEnd, false);
-		el.addEventListener("touchcancel", dragCancel, false);
-		el.addEventListener("touchleave", dragEnd, false);
-		el.addEventListener("touchmove", dragging, false);
-	}
+        var el = document.getElementById('heightChanger');
+        el.addEventListener("touchstart", dragStart, false);
+        el.addEventListener("touchend", dragEnd, false);
+        el.addEventListener("touchcancel", dragCancel, false);
+        el.addEventListener("touchleave", dragEnd, false);
+        el.addEventListener("touchmove", dragging, false);
+  }
 
     var startScreenY, delayY = 0;
     var prevMapHeight, prevListHeight;
@@ -89,30 +89,30 @@
     	prevMapHeight = $("#map").height();
     	prevListHeight = $("#listplace").height();
     	if(isSystemMobile) event.preventDefault();
-	}
+  }
 
-	function dragging(event) {
-		delayY =  (event.touches ? event.touches[0].screenY : event.screenY) - startScreenY;
-		var mapHeight = prevMapHeight + delayY;
-		var listHeight = prevListHeight - delayY;
-		if(mapHeight >= 0 && listHeight >= 0) {
-			$("#map").height(mapHeight);
+  function dragging(event) {
+  delayY =  (event.touches ? event.touches[0].screenY : event.screenY) - startScreenY;
+  var mapHeight = prevMapHeight + delayY;
+  var listHeight = prevListHeight - delayY;
+  if(mapHeight >= 0 && listHeight >= 0) {
+  $("#map").height(mapHeight);
         	$("#listplace").height(listHeight);
     	}
     	if(isSystemMobile) event.preventDefault();
-	}
+  }
 
-	function dragEnd(event) {
-		google.maps.event.trigger(map, 'resize');
-		if(isSystemMobile) event.preventDefault();
-	}
+  function dragEnd(event) {
+  google.maps.event.trigger(map, 'resize');
+  if(isSystemMobile) event.preventDefault();
+  }
 
-	function dragCancel(event) {
-		google.maps.event.trigger(map, 'resize');
-		if(isSystemMobile) event.preventDefault();
-	}
+  function dragCancel(event) {
+  google.maps.event.trigger(map, 'resize');
+  if(isSystemMobile) event.preventDefault();
+  }
 
-    $(function() { 
+    $(function() {
         $("#search").textinput({ disabled: true })
         initSize();
         $( window ).resize(initSize);
@@ -155,19 +155,26 @@
             geocoder = new google.maps.Geocoder;
 
             getLatLng(function(pos) {
-                // Here use LatLng
+                if(userPos) return;
+
                 userPos = pos;
                 $("#search").textinput({ disabled: false });
                 locateMap(pos);
+            });
+
+            google.maps.event.addListener(map, 'click', function(e) {
+              userPos = e.latLng;
+              locateMapOnClick(e.latLng);
+              e.stopPropagation();
             });
        }
 
         var addItem = function(item, i) {
             //console.log(i + " | " + item.name + " | " + (item.vicinity ? item.vicinity : item.formatted_address));
-            var content = $('<li onclick="handleClick(this)" locidx=' + i + ' class="ui-li-static ui-body-inherit">' +  
+            var content = $('<li onclick="handleClick(this)" locidx=' + i + ' class="ui-li-static ui-body-inherit">' +
                 //'<img src="' + item.icon + '" class="ui-li-thumb ui-corner-tl"> ' +
                 '<h3 class="ui-li-heading">' + item.name + '</h3>' +
-                '<p class="ui-li-desc">' + (item.vicinity ? item.vicinity : item.formatted_address) + '</p>' + 
+                '<p class="ui-li-desc">' + (item.vicinity ? item.vicinity : item.formatted_address) + '</p>' +
                 '</li>');
             $("#listplace").append(content);
         }

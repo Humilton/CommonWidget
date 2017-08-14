@@ -51,11 +51,14 @@
                 display: inline-block;
                 white-space: nowrap;
                 text-overflow: ellipsis;
+                font-size: 12px;
             }
 
             .calcway {
                 display: block;
                 margin: auto 0;
+                width: 24px;
+                height: 24px;
             }
 
             .dist {
@@ -64,6 +67,7 @@
                 color: #fff;
                 border-radius: 8px;
                 padding: 0.4em 0.6em;
+                font-size: 10px;
             }
 
             /*.posaddr, .calcway, .dist {
@@ -75,7 +79,7 @@
 
             .swipetop, .swipebottom {
                 width:100%;
-                height: 40%;
+                height: 50%;
                 display: table;
             }
 
@@ -122,7 +126,7 @@
         $("#map").height(restHeight);
     }
 
-    $(function() { 
+    $(function() {
         initSize();
         $( window ).resize(initSize);
     });
@@ -147,7 +151,7 @@
         var path = [{lat: 39.903333, lng: 116.391667, addr: ""}];       // A list like {lat, lng, addr}
         var startPos ;
 
-        $(function() { 
+        $(function() {
             var posStr = getParameterByName('pos');
             if(!posStr) return;
             var pos = posStr.split("|");
@@ -235,11 +239,11 @@
           for(var i=0;i<path.length;i++) {
               var pos = path[i];
             content += ('<swipe-item><div class="swipe-content">' +
-                '<div class="swipetop">' + 
-                    '<H3 class="posaddr">' + pos.addr + '</H3>' + 
-                    '<div class="dist">' + (usrLocaleState != 1 ? 'Unknown' : getDistance(_pos, pos)) + '</div>' + 
+                '<div class="swipetop">' +
+                    '<H3 class="posaddr">' + pos.addr + '</H3>' +
+                    '<div class="dist">' + (usrLocaleState != 1 ? 'Unknown' : getDistance(_pos, pos)) + '</div>' +
                 '</div>' +
-                '<div class="swipebottom"><img class="calcway" src="img/me_box.png" alt="' + pos.addr + '" onclick="wayTo(' + pos.lat + "," + pos.lng + ')"></div>' + 
+                '<div class="swipebottom"><img class="calcway" src="img/p.png" alt="' + pos.addr + '" onclick="wayTo(' + pos.lat + "," + pos.lng + ')"></div>' +
                 '</div></swipe-item>');
         }
         content += '</swipe>';
@@ -254,13 +258,22 @@
               methods: {
                 indexChange: function () {
                   map.panTo(path[swipeEle.index]);
-                    centerPos2(path[swipeEle.index], path[swipeEle.index].addr);
+                centerPos2(path[swipeEle.index], path[swipeEle.index].addr);
                 }
               }
             }).$children[0];
 
+
+
         $(".posaddr").width($(".swipetop").width() - $('.dist').width() - parseFloat($('.dist').css('padding-left'))*2 - 10);
+
+        var posaddr_margin = ($(".swipebottom").height() - $(".posaddr").height()) / 2;
+        $('.posaddr').css("margin-top",  posaddr_margin).css("margin-bottom",  posaddr_margin);
+
         $('.dist').css("margin-top", parseFloat($(".posaddr").css("margin-top")) - parseFloat($(".dist").css("padding-top")));
+
+        var calcway_margin = ($(".swipebottom").height() - $(".calcway").height()) / 2;
+        $('.calcway').css("margin-top",  calcway_margin / 2).css("margin-bottom",  calcway_margin / 2);
       }
 
       var directionsDisplay;
@@ -275,7 +288,7 @@
           if(usrLocaleState != 1 || !startPos){
               alert("User location unknown!");
               return;
-          } 
+          }
 
         var request = {
             origin: startPos,

@@ -1,8 +1,21 @@
 var lastPos, lastAddr;
+
+function initInfoWindow() {
+  if(infoWindow) { infoWindow.close(); }
+  else infoWindow = new google.maps.InfoWindow({map: map});
+
+  return infoWindow;
+}
+
 function locateMap(pos) {
     map.setCenter(pos);
-            
-    infoWindow = new google.maps.InfoWindow({map: map});
+    initInfoWindow();
+
+    locateMapOnClick(pos);
+}
+
+function locateMapOnClick(pos) {
+    initInfoWindow();
     geocodeLatLng(geocoder, map, infoWindow, pos);
 
     var request = {
@@ -69,7 +82,7 @@ var centerPos2 = function(pos , addr) {
 }
 
 function locationError(error, infoWindow, pos) {
-    infoWindow = new google.maps.InfoWindow({map: map});
+	  initInfoWindow();
     infoWindow.setPosition(pos);
     switch(error.code){
         case 0:
@@ -100,8 +113,7 @@ function createMarker(place) {
     });
 
     google.maps.event.addListener(marker, 'click', function() {
-        infoWindow.close();
-        infoWindow = new google.maps.InfoWindow({map: map});
+        initInfoWindow();
         infoWindow.setContent(place.name);
         infoWindow.open(map, this);
         map.panTo(placeLoc);
@@ -152,7 +164,7 @@ var getLatLng = function(callback) {
           locationError(error, infoWindow, map.getCenter());
         }
   }
-  
+
 
   return res;
 }
@@ -163,7 +175,7 @@ function degrees_to_radians(degrees)
   return degrees * (pi/180);
 }
 
-function distance(lat_a, lng_a, lat_b, lng_b) 
+function distance(lat_a, lng_a, lat_b, lng_b)
 {
     var earthRadius = 6371.393;
     var latDiff = degrees_to_radians(lat_b-lat_a);
