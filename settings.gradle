@@ -1,3 +1,2 @@
-//include ':XRefreshView'
-
-//project(":XRefreshView").projectDir = new File(rootDir, "../XRefreshView/library")
+include ':app'
+include ':library'

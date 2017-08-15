@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">CommonWidget</string>
+    <string name="type">Type</string>
+    <string name="values">Value</string>
+    <string name="default_value">Default</string>
+    <string name="share">Share</string>
+    <string name="delete">Delete</string>
+    <string name="long_string">Long ........... String</string>
+    <string name="send_to">Share to ...</string>
+    <string name="can_click">Click Me！</string>
+    <string name="refresh_activity">Refresh Activity</string>
+    <string name="pull_refresh">Pull top bottom To refresh</string>
+    <string name="location_denied">位置信息权限被拒绝！</string>
+</resources>
