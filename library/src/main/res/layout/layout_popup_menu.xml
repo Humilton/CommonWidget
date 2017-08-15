@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:background="@android:drawable/list_selector_background"
+    android:orientation="vertical"
+    android:padding="3dp">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/alert"/>
+
+    <ImageView android:layout_width="match_parent"
+        android:background="@android:color/white"
+        android:layout_height="1dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp" />
+
+    <TextView
+        android:id="@+id/ItemA"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:text="Share"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:ignore="HardcodedText" />
+
+    <ImageView android:layout_width="match_parent"
+        android:background="@android:color/white"
+        android:layout_height="1dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp" />
+
+    <TextView
+        android:id="@+id/ItemB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:text="@string/refresh_activity"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:ignore="HardcodedText" />
+
+    <ImageView android:layout_width="match_parent"
+        android:background="@android:color/white"
+        android:layout_height="1dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp" />
+
+    <TextView
+        android:id="@+id/ItemC"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:text="GoogleMap"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:ignore="HardcodedText" />
+
+    <ImageView android:layout_width="match_parent"
+        android:background="@android:color/white"
+        android:layout_height="1dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp" />
+
+    <TextView
+        android:id="@+id/ItemD"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:text="D)"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:ignore="HardcodedText" />
+
+</LinearLayout>

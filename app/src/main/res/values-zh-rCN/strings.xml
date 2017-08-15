@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">常用控件</string>
+    <string name="type">类型</string>
+    <string name="values">值</string>
+    <string name="default_value">默认</string>
+    <string name="share">分享</string>
+    <string name="delete">删除</string>
+    <string name="long_string">长 ........... 字符串</string>
+    <string name="send_to">分享到 ...</string>
+    <string name="can_click">点我！</string>
+    <string name="refresh_activity">Refresh Activity</string>
+    <string name="pull_refresh">拉头拉底刷新</string>
+</resources>

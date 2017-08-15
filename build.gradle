@@ -1,70 +1,22 @@
-apply plugin: 'com.android.application'
-//apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-
-group='com.github.Humilton'
-
-android {
-    compileSdkVersion 24
-    buildToolsVersion "25.0.0"
-
-    defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
-
-        resValue "string", "share_url", (project.findProperty("SHARE_URL") ?: "")
-        resValue "string", "google_map_url", (project.findProperty("GOOGLE_MAP_URL") ?: "")
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
-    dataBinding {
-        enabled = true;
-    }
-    dexOptions {
-        javaMaxHeapSize "4g"
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-}
-
 buildscript {
     repositories {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.hujiang.aspectjx:gradle-android-plugin-aspectjx:1.0.10'
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
 }
 
 allprojects {
     repositories {
         jcenter()
-        maven { url 'https://jitpack.io' }
     }
 }
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:24.+'
-    compile 'com.android.support:recyclerview-v7:24.+'
-    compile 'com.android.support:cardview-v7:24.+'
-    testCompile 'junit:junit:4.12'
-    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
-    compile 'io.reactivex:rxjava:1.1.6'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.squareup.okhttp3:okhttp:3.8.1'
-    compile 'com.google.code.gson:gson:2.8.1'
-    //compile 'com.huxq17.xrefreshview:xrefreshview:3.6.9'
-    //compile project(":XRefreshView")
-    compile 'com.github.Humilton:XRefreshView:v3.5.6'
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
