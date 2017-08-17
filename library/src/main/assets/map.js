@@ -81,7 +81,7 @@ var centerPos2 = function(pos , addr) {
     }
 }
 
-function locationError(error, infoWindow, pos) {
+function locationError(error, pos) {
 	  initInfoWindow();
     infoWindow.setPosition(pos);
     switch(error.code){
@@ -158,10 +158,10 @@ var getLatLng = function(callback) {
                 };
                 if(callback)  callback(res);
             }, function(error) {
-                locationError(error, infoWindow, map.getCenter());
+                locationError(error, map.getCenter());
             }, {timeout:30000});
         } else {
-          locationError(error, infoWindow, map.getCenter());
+          locationError(error, map.getCenter());
         }
   }
 

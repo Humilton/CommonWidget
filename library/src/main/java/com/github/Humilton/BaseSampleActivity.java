@@ -10,6 +10,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.widget.Toast;
 
 import com.github.Humilton.entity.GoogleGeoCodeResponse;
 
@@ -30,6 +32,8 @@ public abstract class BaseSampleActivity<B extends ViewDataBinding> extends Base
     private static final String iNFOMATION_URL = "http://maps.google.cn/maps/api/geocode/json?language=zh-CN&sensor=true&latlng=%1$s,%2$s";
 
     public void initView() {
+        this.getWindow().setFlags(0x80000000, 0x80000000);
+
         mLocationManager = (LocationManager) mContext.getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -41,6 +45,19 @@ public abstract class BaseSampleActivity<B extends ViewDataBinding> extends Base
         }
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1000, mLocationListener);
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1000, mLocationListener);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (KeyEvent.KEYCODE_BACK == keyCode) {
+            Toast.makeText(getApplicationContext(), "Back 键已被禁用...", Toast.LENGTH_SHORT).show();
+            return true;//同理
+        }
+        if (KeyEvent.KEYCODE_HOME == keyCode) {
+            Toast.makeText(getApplicationContext(), "HOME 键已被禁用...", Toast.LENGTH_SHORT).show();
+            return true;//同理
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     private final LocationListener mLocationListener = new LocationListener() {

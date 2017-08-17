@@ -18,6 +18,27 @@
                 height: 100%;
             }
 
+            #img_back, #img_submit {
+              visibility: hidden;
+            }
+
+            #backdiv, #submitdiv {
+                margin: 0.5em;
+                background-size: 50px;
+                background-repeat: no-repeat;
+                background-position:center;
+            }
+
+            #backdiv {
+                background-image: url('img/btn_back.png');
+                float: left;
+            }
+
+            #submitdiv {
+                background-image: url('img/btn_submit.png');
+                float: right;
+            }
+
              #searchdiv {
                 height: 3.2em;
                 text-align: center;
@@ -118,12 +139,19 @@
 
     <script type="text/javascript">
     var initSize = function() {
-        var halfEm = parseInt($("#backdiv").css("margin-top"));
-        var headheight = $("#header").height() + halfEm * 2;
-        $("#searchdiv").css("margin-left", headheight).css("margin-right", headheight);
+        var nohead = getParameterByName('nohead');
+        if(nohead) {
+          $("#header" ).remove();
+          $("#map").height($(window).height());
+        }
+        else {
+          var halfEm = parseInt($("#backdiv").css("margin-top"));
+          var headheight = $("#header").height() + halfEm * 2;
+          $("#searchdiv").css("margin-left", headheight).css("margin-right", headheight);
 
-        var restHeight = $(window).height() - headheight;
-        $("#map").height(restHeight);
+          var restHeight = $(window).height() - headheight;
+          $("#map").height(restHeight);
+        }
     }
 
     $(function() {
@@ -150,9 +178,11 @@
         var geocoder;
         var path = [{lat: 39.903333, lng: 116.391667, addr: ""}];       // A list like {lat, lng, addr}
         var startPos ;
+        var firstIdx;
 
         $(function() {
             var posStr = getParameterByName('pos');
+            firstIdx = parseInt(getParameterByName('idx'));
             if(!posStr) return;
             var pos = posStr.split("|");
             path = [];
@@ -216,13 +246,20 @@
             }
 
             initDistance();
+
+            // google.maps.event.addListener(map, 'click', function(e) {
+            //   startPos = e.latLng;
+            //   usrLocaleState = 1;
+            //   centerPos2(e.latLng, "");
+            //   e.stopPropagation();
+            // });
       }
 
     var origlocationError = locationError;
-    locationError = function(error, infoWindow, pos) {
+    locationError = function(error, pos) {
         usrLocaleState = 2;
         initDistance();
-        return origlocationError(error, infoWindow, pos);
+        return origlocationError(error, pos);
     }
 
       var getDistance = function(from, to) {
@@ -263,9 +300,15 @@
               }
             }).$children[0];
 
+            if(firstIdx) {
+              if(firstIdx != 0 && firstIdx < path.length) {
+                map.panTo(path[firstIdx]);
+                centerPos2(path[firstIdx], path[firstIdx].addr);
+                swipeEle.swipeTo(firstIdx);
+              }
+            }
 
-
-        $(".posaddr").width($(".swipetop").width() - $('.dist').width() - parseFloat($('.dist').css('padding-left'))*2 - 10);
+        $(".posaddr").width($(".swipe-content").width() - $('.dist').width() - parseFloat($('.dist').css('padding-left'))*2 - 10);
 
         var posaddr_margin = ($(".swipebottom").height() - $(".posaddr").height()) / 2;
         $('.posaddr').css("margin-top",  posaddr_margin).css("margin-bottom",  posaddr_margin);
@@ -286,7 +329,7 @@
 
       var wayTo = function(toLat, toLng) {
           if(usrLocaleState != 1 || !startPos){
-              alert("User location unknown!");
+              alert("您的位置未知，不能规划行车路线!");
               return;
           }
 
