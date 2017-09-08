@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+<android.support.design.widget.CoordinatorLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.github.Humilton.view.FriendInfoScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        app:layout_behavior="com.github.Humilton.view.FriendInfoBehavior"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:focusable="true"
+                android:id="@+id/head"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/holder" />
+
+            <com.andview.refreshview.XRefreshView
+                android:id="@+id/xrefreshview"
+                android:layout_below="@+id/head"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+
+                <com.github.Humilton.view.FriendInfoRecyclerView
+                    android:id="@+id/list_record"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+
+            </com.andview.refreshview.XRefreshView>
+
+            <com.github.Humilton.view.BounceScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/head"
+                android:visibility="gone"
+                android:id="@+id/empty_record">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/empty_record"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="90dp"/>
+            </com.github.Humilton.view.BounceScrollView>
+
+        </RelativeLayout>
+
+    </com.github.Humilton.view.FriendInfoScrollView>
+
+</android.support.design.widget.CoordinatorLayout>
+
+    </layout>

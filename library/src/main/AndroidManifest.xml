@@ -60,6 +60,11 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity
+            android:name=".BehaviorActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
     </application>
 
 </manifest>

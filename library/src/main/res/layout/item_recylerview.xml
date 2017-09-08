@@ -3,10 +3,6 @@
 
     <data>
         <variable
-            name="mSimpleAdapter"
-            type="com.github.Humilton.RefreshActivity.SimpleAdapter" />
-
-        <variable
             name="person"
             type="com.github.Humilton.entity.Person" />
     </data>

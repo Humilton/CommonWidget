@@ -194,6 +194,10 @@ public class SampleActivity extends BaseSampleActivity<SampleBinding> implements
             Intent swipeIntent = new Intent();
             swipeIntent.setClass(mContext, GoogleMapLocationActivity.class);
             mContext.startActivityForResult(swipeIntent, ExtWebViewClient.RESULT_LOCATION);
+        } else if (v.getId() == R.id.ItemD) {
+            Intent swipeIntent = new Intent();
+            swipeIntent.setClass(mContext, BehaviorActivity.class);
+            mContext.startActivity(swipeIntent);
         }
     }
 
@@ -207,9 +211,11 @@ public class SampleActivity extends BaseSampleActivity<SampleBinding> implements
             final TextView itema = (TextView) layout.findViewById(R.id.ItemA);
             final TextView itemb = (TextView) layout.findViewById(R.id.ItemB);
             final TextView itemc = (TextView) layout.findViewById(R.id.ItemC);
+            final TextView itemd = (TextView) layout.findViewById(R.id.ItemD);
             itema.setOnClickListener(this);
             itemb.setOnClickListener(this);
             itemc.setOnClickListener(this);
+            itemd.setOnClickListener(this);
 
             layout.measure(View.MeasureSpec.UNSPECIFIED,
                     View.MeasureSpec.UNSPECIFIED);

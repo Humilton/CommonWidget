@@ -68,7 +68,7 @@ public class RefreshActivity extends BaseActivity<RefreshBinding>  {
         });
     }
 
-    public class SimpleAdapter extends BaseBindingRecyclerAdapter<Person> {
+    public static class SimpleAdapter extends BaseBindingRecyclerAdapter<Person> {
 
         public SimpleAdapter(AppCompatActivity mContext, List<Person> bean) {
             super(mContext, bean);
@@ -77,13 +77,12 @@ public class RefreshActivity extends BaseActivity<RefreshBinding>  {
         @Override
         protected void initBindingViewHolder(ViewGroup parent, int viewType, boolean isItem) {
             ViewDataBinding binding = addBinding(VIEW_TYPES.NORMAL, R.layout.item_recylerview, parent);
-            binding.setVariable(BR.mSimpleAdapter, this);
         }
 
         @Override
         public void onBindViewHolder(BaseViewHolder holder, int position, boolean isItem) {
             Person person = bean.get(position);
-            holder.getBinding(VIEW_TYPES.NORMAL).setVariable(BR.person, person);
+            holder.getBinding(VIEW_TYPES.NORMAL).setVariable(com.github.Humilton.BR.person, person);
         }
     }
 }
