@@ -9,11 +9,16 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.github.Humilton.entity.GoogleGeoCodeResponse;
+import com.github.Humilton.util.LocationUtil;
+import com.lbt05.EvilTransform.GCJPointer;
+import com.lbt05.EvilTransform.TransformUtil;
+import com.lbt05.EvilTransform.WGSPointer;
 
 import java.io.IOException;
 
@@ -30,6 +35,7 @@ public abstract class BaseSampleActivity<B extends ViewDataBinding> extends Base
     private LocationManager mLocationManager;
     private static final int REQUEST_CODE_ASK_LOCATION_PERMISSIONS = 5654;
     private static final String iNFOMATION_URL = "http://maps.google.cn/maps/api/geocode/json?language=zh-CN&sensor=true&latlng=%1$s,%2$s";
+    private Toast tObj = null;
 
     public void initView() {
         this.getWindow().setFlags(0x80000000, 0x80000000);
@@ -47,14 +53,22 @@ public abstract class BaseSampleActivity<B extends ViewDataBinding> extends Base
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1000, mLocationListener);
     }
 
+    private long backKeyDownTime = 0;
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (KeyEvent.KEYCODE_BACK == keyCode) {
-            Toast.makeText(getApplicationContext(), "Back 键已被禁用...", Toast.LENGTH_SHORT).show();
-            return true;//同理
+        if(tObj != null)  tObj.cancel();
+
+        if (KeyEvent.KEYCODE_BACK == keyCode && this instanceof SampleActivity) {
+            if ((System.currentTimeMillis() - backKeyDownTime) > 1000) {
+                tObj = Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT);
+                tObj.show();
+                backKeyDownTime = System.currentTimeMillis();
+                return true;
+            }
         }
         if (KeyEvent.KEYCODE_HOME == keyCode) {
-            Toast.makeText(getApplicationContext(), "HOME 键已被禁用...", Toast.LENGTH_SHORT).show();
+            tObj = Toast.makeText(getApplicationContext(), "HOME 键已被禁用...", Toast.LENGTH_SHORT);
+            tObj.show();
             return true;//同理
         }
         return super.onKeyDown(keyCode, event);
@@ -65,42 +79,32 @@ public abstract class BaseSampleActivity<B extends ViewDataBinding> extends Base
         public void onLocationChanged(final Location location) {
             DemoApp.location = location;
 
-            String urlString = String.format(iNFOMATION_URL, location.getLatitude(), location.getLongitude());
-            Request request = new Request.Builder()
-                    .url(urlString)
-                    .build();
+            boolean isForeign = TransformUtil.outOfChina(location.getLatitude(), location.getLongitude());
+            DemoApp.isInChina = !isForeign;
 
-            new OkHttpClient().newCall(request).enqueue(new Callback() {
+            GCJPointer p2 ;
+            if(DemoApp.isInChina) {
+                WGSPointer p1 = new WGSPointer(location.getLatitude(), location.getLongitude());
+                p2 = p1.toGCJPointer();
+            }
+            else {
+                p2 = new GCJPointer(location.getLatitude(), location.getLongitude());
+            }
 
+            LocationUtil.queryLocation(p2.getLatitude(), p2.getLongitude(), new LocationUtil.GoogleGeoCodeResponseCallback() {
                 @Override
-                public void onFailure(Call call, IOException e) {
-                    e.printStackTrace();
-                }
-
-                @Override
-                public void onResponse(Call call, okhttp3.Response response) throws IOException {
-                    if (response == null) return;
-                    ResponseBody resp = response.body();
-                    if (resp == null) return;
-
-                    // deconstruct like https://stackoverflow.com/questions/14314183/get-country-name-from-latitude-and-longitude
-                    try {
-                        GoogleGeoCodeResponse data = DemoApp.gson.fromJson(resp.string(), GoogleGeoCodeResponse.class);
-                        if (data == null) return;
-                        if (data.status.toUpperCase().equals("OK")) {
-                            for (GoogleGeoCodeResponse.results result : data.results)
-                                for (GoogleGeoCodeResponse.address_component comp : result.address_components) {
-                                    for (String _type : comp.types) {
-                                        if (_type.compareTo("country") == 0) {
-                                            Log.e("==>", comp.long_name + "," + comp.short_name);
-                                            DemoApp.isInChina = comp.short_name.toUpperCase().equals("CN");
-                                            return;
-                                        }
-                                    }
+                public void onResponseSuccess(GoogleGeoCodeResponse data) {
+                    for (GoogleGeoCodeResponse.results result : data.results) {
+                        DemoApp.formatted_address = result.formatted_address;
+                        Log.e("==>", result.formatted_address);
+                        for (GoogleGeoCodeResponse.address_component comp : result.address_components) {
+                            for (String _type : comp.types) {
+                                if (_type.compareTo("country") == 0) {
+                                    Log.e("==>", comp.long_name + "," + comp.short_name);
+                                    DemoApp.isInChina = comp.short_name.toUpperCase().equals("CN");
                                 }
+                            }
                         }
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
                     }
                 }
             });

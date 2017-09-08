@@ -22,6 +22,7 @@ public class DemoApp extends Application {
     public static boolean isInChina = false;
     public static Gson gson;
     public static Location location;
+    public static String formatted_address = "";
 
     @Override
     public void onCreate() {
